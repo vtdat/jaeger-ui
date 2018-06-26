@@ -1,2 +1,4 @@
 build/**/*.js
 coverage/**/*.js
+packages/plexus/config/*
+packages/plexus/scripts/*
