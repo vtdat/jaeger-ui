@@ -31,6 +31,11 @@ export type Log = {
   fields: Array<KeyValuePair>;
 };
 
+export type Metric = {
+  timestamp: number,
+  fields: Array <KeyValuePair>,
+};
+
 export type Process = {
   serviceName: string;
   tags: Array<KeyValuePair>;
@@ -54,6 +59,7 @@ export type SpanData = {
   logs: Array<Log>;
   tags: Array<KeyValuePair>;
   references: Array<SpanReference>;
+  metrics: Array<Metric>;
 };
 
 export type Span = SpanData & {

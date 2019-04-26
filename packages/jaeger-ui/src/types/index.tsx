@@ -65,4 +65,5 @@ export type ReduxState = {
   };
   traceDiff: TTraceDiffState;
   traceTimeline: TTraceTimeline;
+  metrics: string;
 };

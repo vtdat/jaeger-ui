@@ -17,6 +17,7 @@ import { Divider, Tooltip } from 'antd';
 
 import AccordianKeyValues from './AccordianKeyValues';
 import AccordianLogs from './AccordianLogs';
+import AccordianMetrics from './AccordianMetrics';
 import DetailState from './DetailState';
 import { formatDuration } from '../utils';
 import LabeledList from '../../../common/LabeledList';
@@ -36,6 +37,8 @@ type SpanDetailProps = {
   span: Span;
   tagsToggle: (spanID: string) => void;
   traceStartTime: number;
+  metricsToggle: (spanID: string) => void;
+  metricItemToggle: (spanID: string, metric: any) => void;
 };
 
 export default function SpanDetail(props: SpanDetailProps) {
@@ -45,12 +48,14 @@ export default function SpanDetail(props: SpanDetailProps) {
     linksGetter,
     logItemToggle,
     logsToggle,
+    metricItemToggle,
+    metricsToggle,
     processToggle,
     span,
     tagsToggle,
     traceStartTime,
   } = props;
-  const { isTagsOpen, isProcessOpen, logs: logsState } = detailState;
+  const { isTagsOpen, isProcessOpen, logs: logsState, metrics: metricsState } = detailState;
   const { operationName, process, duration, relativeStartTime, spanID, logs, tags } = span;
   const overviewItems = [
     {
@@ -113,7 +118,17 @@ export default function SpanDetail(props: SpanDetailProps) {
               timestamp={traceStartTime}
             />
           )}
-
+        </div>
+        <div>
+          <AccordianMetrics
+            isOpen={metricsState.isOpen}
+            openedItems={metricsState.openedItems}
+            onToggle={() => metricsToggle(spanID)}
+            onItemToggle={metricItem => metricItemToggle(spanID, metricItem)}
+            span={span}
+          />
+        </div>
+      <div>
         <small className="SpanDetail--debugInfo">
           <Tooltip title="Click ID to add to filter">
             <span className="SpanDetail--debugLabel" data-label="SpanID:" />{' '}

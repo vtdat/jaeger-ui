@@ -20,15 +20,20 @@ import { Log } from '../../../../types/trace';
 export default class DetailState {
   isTagsOpen: boolean;
   isProcessOpen: boolean;
-  logs: { isOpen: boolean; openedItems: Set<Log> };
+  logs: { isOpen: boolean, openedItems: Set<Log> };
+  metrics: { isOpen: boolean, openedItems: Set<any> };
 
   constructor(oldState?: DetailState) {
-    const { isTagsOpen, isProcessOpen, logs }: DetailState | Record<string, undefined> = oldState || {};
+    const { isTagsOpen, isProcessOpen, logs, metrics }: DetailState | Record<string, undefined> = oldState || {};
     this.isTagsOpen = Boolean(isTagsOpen);
     this.isProcessOpen = Boolean(isProcessOpen);
     this.logs = {
       isOpen: Boolean(logs && logs.isOpen),
       openedItems: logs && logs.openedItems ? new Set(logs.openedItems) : new Set(),
+    };
+    this.metrics = {
+      isOpen: Boolean(metrics && metrics.isOpen),
+      openedItems: metrics && metrics.openedItems ? new Set(metrics.openedItems) : new Set(),
     };
   }
 
@@ -56,6 +61,22 @@ export default class DetailState {
       next.logs.openedItems.delete(logItem);
     } else {
       next.logs.openedItems.add(logItem);
+    }
+    return next;
+  }
+
+  toggleMetrics() {
+    const next = new DetailState(this);
+    next.metrics.isOpen = !this.metrics.isOpen;
+    return next;
+  }
+
+  toggleMetricItem(metricItem: any) {
+    const next = new DetailState(this);
+    if (next.metrics.openedItems.has(metricItem)) {
+      next.metrics.openedItems.delete(metricItem);
+    } else {
+      next.metrics.openedItems.add(metricItem);
     }
     return next;
   }

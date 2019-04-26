@@ -63,6 +63,8 @@ type TDispatchProps = {
   detailProcessToggle: (spanID: string) => void;
   detailTagsToggle: (spanID: string) => void;
   detailToggle: (spanID: string) => void;
+  detailMetricItemToggle: (spanID: string, metric: any) => void;
+  detailMetricsToggle: (spanID: string) => void;
   setSpanNameColumnWidth: (width: number) => void;
   setTrace: (trace: Trace | TNil, uiFind: string | TNil) => void;
 };
@@ -351,7 +353,9 @@ export class VirtualizedTraceViewImpl extends React.PureComponent<VirtualizedTra
     const { serviceName } = span.process;
     const {
       detailLogItemToggle,
+      detailMetricItemToggle,
       detailLogsToggle,
+      detailMetricsToggle,
       detailProcessToggle,
       detailStates,
       detailTagsToggle,
@@ -374,7 +378,9 @@ export class VirtualizedTraceViewImpl extends React.PureComponent<VirtualizedTra
           detailState={detailState}
           linksGetter={this.linksGetter}
           logItemToggle={detailLogItemToggle}
+          metricItemToggle={detailMetricItemToggle}
           logsToggle={detailLogsToggle}
+          metricsToggle={detailMetricsToggle}
           processToggle={detailProcessToggle}
           span={span}
           tagsToggle={detailTagsToggle}

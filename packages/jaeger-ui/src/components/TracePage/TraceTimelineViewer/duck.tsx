@@ -25,6 +25,7 @@ import spanAncestorIds from '../../../utils/span-ancestor-ids';
 
 // payloads
 export type TSpanIdLogValue = { logItem: Log; spanID: string };
+export type TSpanIdMetricValue = { metricItem: any; spanID: string };
 export type TSpanIdValue = { spanID: string };
 type TSpansValue = { spans: Span[] };
 type TTraceUiFindValue = { trace: Trace; uiFind: string | TNil };
@@ -66,6 +67,8 @@ export const actionTypes = generateActionTypes('@jaeger-ui/trace-timeline-viewer
   'DETAIL_PROCESS_TOGGLE',
   'DETAIL_LOGS_TOGGLE',
   'DETAIL_LOG_ITEM_TOGGLE',
+  'DETAIL_METRICS_TOGGLE',
+  'DETAIL_METRIC_ITEM_TOGGLE',
   'EXPAND_ALL',
   'EXPAND_ONE',
   'REMOVE_HOVER_INDENT_GUIDE_ID',
@@ -86,6 +89,8 @@ const fullActions = createActions<TActionTypes>({
   [actionTypes.DETAIL_PROCESS_TOGGLE]: (spanID: string) => ({ spanID }),
   [actionTypes.DETAIL_LOGS_TOGGLE]: (spanID: string) => ({ spanID }),
   [actionTypes.DETAIL_LOG_ITEM_TOGGLE]: (spanID: string, logItem: Log) => ({ logItem, spanID }),
+  [actionTypes.DETAIL_METRICS_TOGGLE]: (spanID: string) => ({ spanID }),
+  [actionTypes.DETAIL_METRIC_ITEM_TOGGLE]: (spanID: string, metricItem: any) => ({ metricItem, spanID }),
   [actionTypes.ADD_HOVER_INDENT_GUIDE_ID]: (spanID: string) => ({ spanID }),
   [actionTypes.REMOVE_HOVER_INDENT_GUIDE_ID]: (spanID: string) => ({ spanID }),
 });
@@ -215,7 +220,7 @@ function detailToggle(state: TTraceTimeline, { spanID }: TSpanIdValue) {
 }
 
 function detailSubsectionToggle(
-  subSection: 'tags' | 'process' | 'logs',
+  subSection: 'tags' | 'process' | 'logs' | 'metrics',
   state: TTraceTimeline,
   { spanID }: TSpanIdValue
 ) {
@@ -228,8 +233,10 @@ function detailSubsectionToggle(
     detailState = old.toggleTags();
   } else if (subSection === 'process') {
     detailState = old.toggleProcess();
-  } else {
+  } else if (subSection === 'logs') {
     detailState = old.toggleLogs();
+  } else {
+    detailState = old.toggleMetrics();
   }
   const detailStates = new Map(state.detailStates);
   detailStates.set(spanID, detailState);
@@ -239,6 +246,7 @@ function detailSubsectionToggle(
 const detailTagsToggle = detailSubsectionToggle.bind(null, 'tags');
 const detailProcessToggle = detailSubsectionToggle.bind(null, 'process');
 const detailLogsToggle = detailSubsectionToggle.bind(null, 'logs');
+const detailMetricsToggle = detailSubsectionToggle.bind(null, 'metrics');
 
 function detailLogItemToggle(state: TTraceTimeline, { spanID, logItem }: TSpanIdLogValue) {
   const old = state.detailStates.get(spanID);
@@ -246,6 +254,17 @@ function detailLogItemToggle(state: TTraceTimeline, { spanID, logItem }: TSpanId
     return state;
   }
   const detailState = old.toggleLogItem(logItem);
+  const detailStates = new Map(state.detailStates);
+  detailStates.set(spanID, detailState);
+  return { ...state, detailStates };
+}
+
+function detailMetricItemToggle(state: TTraceTimeline, { spanID, metricItem }: TSpanIdMetricValue) {
+  const old = state.detailStates.get(spanID);
+  if (!old) {
+    return state;
+  }
+  const detailState = old.toggleMetricItem(metricItem);
   const detailStates = new Map(state.detailStates);
   detailStates.set(spanID, detailState);
   return { ...state, detailStates };
@@ -273,6 +292,8 @@ export default handleActions(
     [actionTypes.COLLAPSE_ONE]: guardReducer(collapseOne),
     [actionTypes.DETAIL_LOGS_TOGGLE]: guardReducer(detailLogsToggle),
     [actionTypes.DETAIL_LOG_ITEM_TOGGLE]: guardReducer(detailLogItemToggle),
+    [actionTypes.DETAIL_METRICS_TOGGLE]: guardReducer(detailMetricsToggle),
+    [actionTypes.DETAIL_METRIC_ITEM_TOGGLE]: guardReducer(detailMetricItemToggle),
     [actionTypes.DETAIL_PROCESS_TOGGLE]: guardReducer(detailProcessToggle),
     [actionTypes.DETAIL_TAGS_TOGGLE]: guardReducer(detailTagsToggle),
     [actionTypes.DETAIL_TOGGLE]: guardReducer(detailToggle),

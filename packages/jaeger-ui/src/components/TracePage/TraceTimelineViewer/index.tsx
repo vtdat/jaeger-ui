@@ -104,7 +104,10 @@ export class TraceTimelineViewerImpl extends React.PureComponent<TProps> {
           updateNextViewRangeTime={updateNextViewRangeTime}
           updateViewRangeTime={updateViewRangeTime}
         />
-        <VirtualizedTraceView {...rest} currentViewRangeTime={viewRange.time.current} />
+        <VirtualizedTraceView 
+          {...rest}
+          currentViewRangeTime={viewRange.time.current}
+        />
       </div>
     );
   }
